@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
+import android.widget.CheckBox
 import android.widget.EditText
 
 class AddProduct : AppCompatActivity() {
@@ -17,6 +18,14 @@ class AddProduct : AppCompatActivity() {
             intent.putExtra("model", findViewById<EditText>(R.id.editTextModel).text.toString())
             intent.putExtra("qt", findViewById<EditText>(R.id.editTextQt).text.toString().toInt())
             intent.putExtra("price", findViewById<EditText>(R.id.editTextPrice).text.toString().toDouble())
+            if(findViewById<CheckBox>(R.id.checkBox).isChecked())
+            {
+                intent.putExtra("promotion", true)
+            }
+            else
+            {
+                intent.putExtra("promotion", false)
+            }
             setResult(RESULT_OK, intent)
             finish()
         }

@@ -13,12 +13,11 @@ class EditFunc : AppCompatActivity() {
         setContentView(R.layout.activity_edit_product)
 
         findViewById<Button>(R.id.buttonSave).setOnClickListener {
-            val intent = Intent()
-            intent.putExtra("brand", findViewById<TextView>(R.id.textViewDetailedBrand).text.toString())
-            intent.putExtra("model", findViewById<EditText>(R.id.editTextModel).text.toString())
-            intent.putExtra("qt", findViewById<EditText>(R.id.editTextQt).text.toString().toInt())
-            intent.putExtra("price", findViewById<EditText>(R.id.editTextPrice).text.toString().toDouble())
-            setResult(RESULT_OK, intent)
+            val intentEdit = Intent()
+            intentEdit.putExtra("model", intent.getStringExtra("model"))
+            intentEdit.putExtra("qt", findViewById<EditText>(R.id.editTextQt).text.toString().toInt())
+            intentEdit.putExtra("price", findViewById<EditText>(R.id.editTextPrice).text.toString().toDouble())
+            setResult(RESULT_OK, intentEdit)
             finish()
         }
 

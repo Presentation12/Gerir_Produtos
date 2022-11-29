@@ -24,13 +24,14 @@ class MainActivity : AppCompatActivity() {
     val products = arrayListOf<Product>()
     val adapter = productsAdapter()
     var getResult : ActivityResultLauncher<Intent>? = null
+    var editResult : ActivityResultLauncher<Intent>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        products.add(Product("Nike","Air Force 1",200,109.99))
-        products.add(Product("Nike","Air Jordan 1",300,129.99))
+        products.add(Product("Nike","Air Force 1",200,109.99, true))
+        products.add(Product("Nike","Air Jordan 1",300,129.99, false))
 
         val searchViewProducts = findViewById<SearchView>(R.id.searchViewProducts)
 
@@ -43,10 +44,30 @@ class MainActivity : AppCompatActivity() {
                     val model = it.data?.getStringExtra("model")
                     val qt = it.data?.getIntExtra("qt", 0)
                     val price = it.data?.getDoubleExtra("price",0.0)
-                    products.add(Product(brand,model,qt,price))
+                    val promotion = it.data?.getBooleanExtra("promotion",false)
+                    products.add(Product(brand,model,qt,price,promotion))
                     adapter.notifyDataSetChanged()
                 }
             }
+
+        editResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if(it.resultCode == Activity.RESULT_OK){
+                val model = it.data?.getStringExtra("model")
+                val qt = it.data?.getIntExtra("qt", 0)
+                val price = it.data?.getDoubleExtra("price",0.0)
+
+                for(product in products)
+                {
+                    if(product.model == model)
+                    {
+                        product.qt = qt
+                        product.price = price
+                    }
+                }
+
+                adapter.notifyDataSetChanged()
+            }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -63,6 +84,10 @@ class MainActivity : AppCompatActivity() {
             }
             R.id.count_products -> {
                 Toast.makeText(this,"Quantity of products: ${products.size}", Toast.LENGTH_LONG).show()
+                true
+            }
+            R.id.order_products -> {
+                //products.sortedBy { it.brand }
                 true
             }
             else -> {
@@ -103,7 +128,16 @@ class MainActivity : AppCompatActivity() {
                 intent.putExtra("model", products[position].model)
                 intent.putExtra("qt", products[position].qt)
                 intent.putExtra("price", products[position].price)
+                intent.putExtra("promotion", products[position].promotion)
                 startActivity(intent)
+            }
+
+            editButton.setOnClickListener {
+                val intentEdit = Intent(this@MainActivity, EditFunc::class.java)
+                intentEdit.putExtra("model", products[position].model)
+                intentEdit.putExtra("qt", products[position].qt)
+                intentEdit.putExtra("price", products[position].price)
+                editResult?.launch(intentEdit)
             }
 
             deleteButton.setOnClickListener{
